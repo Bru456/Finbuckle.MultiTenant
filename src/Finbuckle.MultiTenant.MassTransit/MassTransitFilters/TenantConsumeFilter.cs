@@ -11,6 +11,27 @@ using System.Threading.Tasks;
 
 namespace Finbuckle.MultiTenant.MassTransit.MassTransitFilters
 {
+    /// <summary>
+    /// <see href="https://masstransit.io/">MassTransit</see> <see href="https://masstransit.io/documentation/configuration/middleware/scoped">Scoped Filter</see> to resolve the 
+    /// <see cref="ITenantInfo.Identifier"/> from a header within the MassTransit message.
+    /// This is scoped to the ConsumeContext.
+    /// </summary>
+    /// <typeparam name="T">The Type of the Consumer</typeparam>
+    /// <param name="tenantResolver">Injected via Dependency Injection. <see cref="ITenantResolver"/>.</param>
+    /// <param name="mtcSetter">Injected via Dependency Injection. <see cref="IMultiTenantContextSetter"/></param>
+    /// <example> 
+    /// <code>
+    /// <![CDATA[ builder.Services.AddMassTransit(x =>
+    ///        {
+    ///            x.AddConsumer=<GettingStartedConsumer=></GettingStartedConsumer>();
+    ///            x.UsingInMemory((context, cfg) =>
+    ///            {
+    ///                cfg.UseConsumeFilter(typeof(TenantConsumeFilter<>), context);
+    ///                cfg.ConfigureEndpoints(context);
+    ///            });
+    ///        });]]>
+    /// </code>
+    /// </example>
     public class TenantConsumeFilter<T> (
         ITenantResolver tenantResolver,
         IMultiTenantContextSetter mtcSetter
@@ -18,13 +39,19 @@ namespace Finbuckle.MultiTenant.MassTransit.MassTransitFilters
         : IFilter<ConsumeContext<T>> 
         where T : class
     {
-       
 
         public void Probe(ProbeContext context)
         {
             context.CreateFilterScope("tenantConsumeFilter");
         }
 
+        /// <summary>
+        /// If configured, called by MassTransit during the message processing pipeline and resolves the tenant in Finbukcle.MultiTenant. Loosely based on Finbuckle.MultiTenant.AspNetCore.Internal.MultiTenantMiddleware.
+        /// </summary>
+        /// <param name="context">Current MassTransit Consumer Context.</param>
+        /// <param name="next">The next step in the MassTransit pipeline.</param>
+        /// <returns></returns>
+        /// <remarks>The idea here is that MassTransit calls this as part of its own middleware so we in effect embed Finbuckle Tenant Resolving capabilities into the MassTransit middleware.</remarks>
         public async Task Send(ConsumeContext<T> context, IPipe<ConsumeContext<T>> next)
         {
             IMultiTenantContext? multiTenantContext = await tenantResolver.ResolveAsync(context);

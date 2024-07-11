@@ -24,18 +24,18 @@ namespace MassTransitApi
                 .WithConfigurationStore()
                 .WithRouteStrategy()
                 .WithHeaderStrategy("tenant")
-                .WithMassTransitHeaderStrategy("tenantIdentifier");
+                .WithMassTransitHeaderStrategy("tenantIdentifier"); // Only required if wanting to use MassTransit.
             //.WithBasePathStrategy();
             
 
             builder.Services.AddMassTransit(x =>
             {
-                x.AddConsumer<GettingStartedConsumer>();
-                x.UsingInMemory((context, cfg) =>
+                x.AddConsumer<GettingStartedConsumer>(); // The MassTransit Consumer that will be used to consume messages.
+                x.UsingInMemory((context, cfg) => //using in memory for simplicity. Please replace with your preferred transport method.
                 {
-                    cfg.UseConsumeFilter(typeof(TenantConsumeFilter<>), context);
-                    cfg.UsePublishFilter(typeof(TenantPublishFilter<>), context);
-                    cfg.UseSendFilter(typeof(TenantPublishFilter<>), context);
+                    cfg.UseConsumeFilter(typeof(TenantConsumeFilter<>), context); // Required if wanting to have a MassTransit Consumer and maintain tenant context. To use this filter, .WithMassTransitHeaderStrategy() must be called in the MultiTenantBuilder.
+                    cfg.UsePublishFilter(typeof(TenantPublishFilter<>), context); // Required if wanting to have a MassTransit Publisher and maintain tenant context. To use this filter, .WithMassTransitHeaderStrategy() must be called in the MultiTenantBuilder.
+                    cfg.UseSendFilter(typeof(TenantPublishFilter<>), context); // Required if wanting to have a MassTransit Sender and maintain tenant context. To use this filter, .WithMassTransitHeaderStrategy() must be called in the MultiTenantBuilder.
                     cfg.ConfigureEndpoints(context);
                 });
             });

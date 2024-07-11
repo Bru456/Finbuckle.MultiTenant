@@ -16,7 +16,7 @@ namespace Finbuckle.MultiTenant
     public static class MultiTenantBuilderExtensions
     {
         /// <summary>
-        /// Adds and configures a MassTransitHeaderStrategy to the application.
+        /// Adds and configures a MassTransitHeaderStrategy to the application with the default value as defined in <see cref="ConstantsExtensions.MassTransitTenantHeader"/>.
         /// </summary>
         /// <typeparam name="TTenantInfo">The ITenantInfo implementation type.</typeparam>
         /// <param name="builder">MultiTenantBuilder instance.</param>
@@ -27,7 +27,7 @@ namespace Finbuckle.MultiTenant
         => builder.WithMassTransitHeaderStrategy($"{ConstantsExtensions.MassTransitTenantHeader}");
 
         /// <summary>
-        /// Adds and configures a MassTransitHeaderStrategy to the application.
+        /// Adds and configures a MassTransitHeaderStrategy to the application with a header value.
         /// </summary>
         /// <typeparam name="TTenantInfo">The ITenantInfo implementation type.</typeparam>
         /// <param name="builder">MultiTenantBuilder instance.</param>
@@ -45,6 +45,7 @@ namespace Finbuckle.MultiTenant
 
             TenantHeaderConfiguration? headerConfiguration = new TenantHeaderConfiguration(headerKey);
 
+            // Add the TenantHeaderConfiguration to the services collection for Dependency Injection to be picked up in the filters.
             builder.Services.AddSingleton<ITenantHeaderConfiguration>(headerConfiguration);
 
             return builder.WithStrategy<MassTransitHeaderStrategy>(ServiceLifetime.Singleton, headerConfiguration);
