@@ -25,10 +25,11 @@ public class SessionStrategy : IMultiTenantStrategy
     public Task<string?> GetIdentifierAsync(object context)
     {
             if(!(context is HttpContext httpContext))
-                throw new MultiTenantException(null,
-                    new ArgumentException($"\"{nameof(context)}\" type must be of type HttpContext", nameof(context)));
+                return Task.FromResult<string?>(null);
+                //throw new MultiTenantException(null,
+                //    new ArgumentException($"\"{nameof(context)}\" type must be of type HttpContext", nameof(context)));
 
-            var identifier = httpContext.Session.GetString(tenantKey);
+        var identifier = httpContext.Session.GetString(tenantKey);
             return Task.FromResult<string?>(identifier); // Prevent the compiler warning that no await exists.
         }
 }

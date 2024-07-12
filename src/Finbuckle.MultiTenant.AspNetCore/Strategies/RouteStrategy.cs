@@ -26,10 +26,11 @@ public class RouteStrategy : IMultiTenantStrategy
     {
 
             if (!(context is HttpContext httpContext))
-                throw new MultiTenantException(null,
-                    new ArgumentException($"\"{nameof(context)}\" type must be of type HttpContext", nameof(context)));
+                return Task.FromResult<string?>(null);
+                //throw new MultiTenantException(null,
+                //    new ArgumentException($"\"{nameof(context)}\" type must be of type HttpContext", nameof(context)));
 
-            object? identifier;
+        object? identifier;
             httpContext.Request.RouteValues.TryGetValue(TenantParam, out identifier);
 
             return Task.FromResult(identifier as string);

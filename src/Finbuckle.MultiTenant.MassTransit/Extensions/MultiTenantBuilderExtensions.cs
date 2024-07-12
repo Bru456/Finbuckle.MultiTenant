@@ -16,7 +16,7 @@ namespace Finbuckle.MultiTenant
     public static class MultiTenantBuilderExtensions
     {
         /// <summary>
-        /// Adds and configures a MassTransitHeaderStrategy to the application with the default value as defined in <see cref="ConstantsExtensions.MassTransitTenantHeader"/>.
+        /// Adds and configures a MassTransitHeaderStrategy to the application with the default value as defined in <see cref="Constants.TenantToken"/>.
         /// </summary>
         /// <typeparam name="TTenantInfo">The ITenantInfo implementation type.</typeparam>
         /// <param name="builder">MultiTenantBuilder instance.</param>
@@ -24,7 +24,7 @@ namespace Finbuckle.MultiTenant
         public static MultiTenantBuilder<TTenantInfo> WithMassTransitHeaderStrategy<TTenantInfo>(
             this MultiTenantBuilder<TTenantInfo> builder)
             where TTenantInfo : class, ITenantInfo, new()
-        => builder.WithMassTransitHeaderStrategy($"{ConstantsExtensions.MassTransitTenantHeader}");
+        => builder.WithMassTransitHeaderStrategy($"{Constants.TenantToken}");
 
         /// <summary>
         /// Adds and configures a MassTransitHeaderStrategy to the application with a header value.

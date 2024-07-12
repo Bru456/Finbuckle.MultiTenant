@@ -34,9 +34,10 @@ public class ClaimStrategy : IMultiTenantStrategy
 	public async Task<string?> GetIdentifierAsync(object context)
 	{
 			if (!(context is HttpContext httpContext))
-				throw new MultiTenantException(null, new ArgumentException($@"""{nameof(context)}"" type must be of type HttpContext", nameof(context)));
+				return null;
+               //throw new MultiTenantException(null, new ArgumentException($@"""{nameof(context)}"" type must be of type HttpContext", nameof(context)));
 
-			if (httpContext.User.Identity is { IsAuthenticated: true })
+        if (httpContext.User.Identity is { IsAuthenticated: true })
 				return httpContext.User.FindFirst(_tenantKey)?.Value;
 
 			AuthenticationScheme? authScheme;

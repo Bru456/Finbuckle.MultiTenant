@@ -29,8 +29,9 @@ public class RemoteAuthenticationCallbackStrategy : IMultiTenantStrategy
     public async virtual Task<string?> GetIdentifierAsync(object context)
     {
             if (!(context is HttpContext httpContext))
-                throw new MultiTenantException(null,
-                    new ArgumentException($"\"{nameof(context)}\" type must be of type HttpContext", nameof(context)));
+                return null;
+        //throw new MultiTenantException(null,
+        //            new ArgumentException($"\"{nameof(context)}\" type must be of type HttpContext", nameof(context)));
 
             var schemes = httpContext.RequestServices.GetRequiredService<IAuthenticationSchemeProvider>();
 

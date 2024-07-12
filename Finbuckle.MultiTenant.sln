@@ -27,11 +27,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BasePathStrategySample", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentitySample", "samples\net6.0\IdentitySample\IdentitySample.csproj", "{EF62B65E-C017-41D2-9D4F-EB3C6E5CD86D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finbuckle.MultiTenant.MassTransit", "src\Finbuckle.MultiTenant.MassTransit\Finbuckle.MultiTenant.MassTransit.csproj", "{8A78983A-4D99-4C61-BA92-B5E51B540608}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Finbuckle.MultiTenant.MassTransit", "src\Finbuckle.MultiTenant.MassTransit\Finbuckle.MultiTenant.MassTransit.csproj", "{8A78983A-4D99-4C61-BA92-B5E51B540608}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "net8.0", "net8.0", "{9E732636-2ACD-403F-AADB-4A5E4F7EF496}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassTransitApi", "samples\net8.0\MassTransitApi\MassTransitApi.csproj", "{65313388-C44D-440A-BC76-BC68C46968C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MassTransitApi", "samples\net8.0\MassTransitApi\MassTransitApi.csproj", "{65313388-C44D-440A-BC76-BC68C46968C4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finbuckle.MultiTenant.MassTransit.Test", "test\Finbuckle.MultiTenant.MassTransit.Test\Finbuckle.MultiTenant.MassTransit.Test.csproj", "{BF16BB2D-9626-46C9-A5F8-7563E375E14C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,6 +81,10 @@ Global
 		{65313388-C44D-440A-BC76-BC68C46968C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65313388-C44D-440A-BC76-BC68C46968C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65313388-C44D-440A-BC76-BC68C46968C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF16BB2D-9626-46C9-A5F8-7563E375E14C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF16BB2D-9626-46C9-A5F8-7563E375E14C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF16BB2D-9626-46C9-A5F8-7563E375E14C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF16BB2D-9626-46C9-A5F8-7563E375E14C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -96,6 +102,7 @@ Global
 		{8A78983A-4D99-4C61-BA92-B5E51B540608} = {CCC3146F-320C-4E1D-8017-056C9DCB6B0C}
 		{9E732636-2ACD-403F-AADB-4A5E4F7EF496} = {78DD95B5-E466-4ED0-8824-36F78AB08174}
 		{65313388-C44D-440A-BC76-BC68C46968C4} = {9E732636-2ACD-403F-AADB-4A5E4F7EF496}
+		{BF16BB2D-9626-46C9-A5F8-7563E375E14C} = {DDDA7AB6-03C2-4499-BED3-E404CB6ADE69}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B6A4795-D7DB-4042-A577-97DA578E0C11}

@@ -65,8 +65,9 @@ public class HostStrategy : IMultiTenantStrategy
     public Task<string?> GetIdentifierAsync(object context)
     {
             if (!(context is HttpContext httpContext))
-                throw new MultiTenantException(null,
-                    new ArgumentException($"\"{nameof(context)}\" type must be of type HttpContext", nameof(context)));
+                return Task.FromResult<string?>(null);
+                //throw new MultiTenantException(null,
+                //    new ArgumentException($"\"{nameof(context)}\" type must be of type HttpContext", nameof(context)));
 
             var host = httpContext.Request.Host;
 

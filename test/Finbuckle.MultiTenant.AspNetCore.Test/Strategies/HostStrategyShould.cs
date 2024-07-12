@@ -68,12 +68,21 @@ public class HostStrategyShould
             new HostStrategy(template!));
     }
 
+    //[Fact]
+    //public async void ThrowIfContextIsNotHttpContext()
+    //{
+    //    var context = new Object();
+    //    var strategy = new HostStrategy("__tenant__.*");
+
+    //    await Assert.ThrowsAsync<MultiTenantException>(() => strategy.GetIdentifierAsync(context));
+    //}
+
     [Fact]
-    public async void ThrowIfContextIsNotHttpContext()
+    public async void ReturnNullIfContextIsNotHttpContext()
     {
         var context = new Object();
         var strategy = new HostStrategy("__tenant__.*");
 
-        await Assert.ThrowsAsync<MultiTenantException>(() => strategy.GetIdentifierAsync(context));
+        Assert.Null(await strategy.GetIdentifierAsync(context));
     }
 }

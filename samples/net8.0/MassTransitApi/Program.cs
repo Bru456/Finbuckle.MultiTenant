@@ -24,7 +24,8 @@ namespace MassTransitApi
                 .WithConfigurationStore()
                 .WithRouteStrategy()
                 .WithHeaderStrategy("tenant")
-                .WithMassTransitHeaderStrategy("tenantIdentifier"); // Only required if wanting to use MassTransit.
+                .WithMassTransitHeaderStrategy();
+                //.WithMassTransitHeaderStrategy("tenantIdentifier"); // Only required if wanting to use MassTransit.
             //.WithBasePathStrategy();
             
 

@@ -16,15 +16,16 @@ public class HeaderStrategy : IMultiTenantStrategy
     private readonly string _headerKey;
     public HeaderStrategy(string headerKey)
     {
-            _headerKey = headerKey;
-        }
+        _headerKey = headerKey;
+    }
 
     public Task<string?> GetIdentifierAsync(object context)
     {
-            if (!(context is HttpContext httpContext))
-                throw new MultiTenantException(null,
-                    new ArgumentException($"\"{nameof(context)}\" type must be of type HttpContext", nameof(context)));
+        if (!(context is HttpContext httpContext))
+            return Task.FromResult<string?>(null);
+            //throw new MultiTenantException(null,
+            //    new ArgumentException($"\"{nameof(context)}\" type must be of type HttpContext", nameof(context)));
 
-            return Task.FromResult(httpContext?.Request.Headers[_headerKey].FirstOrDefault());
-        }
+        return Task.FromResult(httpContext?.Request.Headers[_headerKey].FirstOrDefault());
+    }
 }

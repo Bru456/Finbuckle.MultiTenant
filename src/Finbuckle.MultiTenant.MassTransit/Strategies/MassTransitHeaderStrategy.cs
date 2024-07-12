@@ -31,15 +31,24 @@ namespace Finbuckle.MultiTenant.MassTransit.Strategies
         public Task<string?> GetIdentifierAsync(object context)
         {
             string? header = null;
+            
+            if (!(context is ConsumeContext || context is CompensateContext || context is ExecuteContext))
+                return Task.FromResult<string?>(null);
 
-            if (!(context is ConsumeContext consumeContext))
-                throw new MultiTenantException(null,
-                    new ArgumentException($"\"{nameof(context)}\" type must be of type ConsumeContext", nameof(context)));
-
-            if (consumeContext.Headers.TryGetHeader(_config.TenantIdentifierHeaderKey, out var tenantId))
+            if(context is MessageContext messageContext)
+            {
+                if (messageContext.Headers.TryGetHeader(_config.TenantIdentifierHeaderKey, out var tenantId))
                 {
                     header = tenantId as string;
                 }
+            }
+
+            
+
+            //if (consumeContext.Headers.TryGetHeader(_config.TenantIdentifierHeaderKey, out var tenantId))
+            //    {
+            //        header = tenantId as string;
+            //    }
 
             return Task.FromResult(header);
         }
