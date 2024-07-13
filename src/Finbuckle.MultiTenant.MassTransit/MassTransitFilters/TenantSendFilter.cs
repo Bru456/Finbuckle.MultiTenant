@@ -31,12 +31,18 @@ namespace Finbuckle.MultiTenant.MassTransit.MassTransitFilters
     ///        });]]>
     /// </code>
     /// </example>
-    public class TenantSendFilter<T>(
-        IMultiTenantContextAccessor<TenantInfo> mtca,
-        ITenantHeaderConfiguration thc
-        ) 
-        : IFilter<SendContext<T>> where T : class
+    public class TenantSendFilter<T> : IFilter<SendContext<T>> where T : class
     {
+
+        IMultiTenantContextAccessor<TenantInfo> _mtca;
+        ITenantHeaderConfiguration _thc;
+
+        public TenantSendFilter(IMultiTenantContextAccessor<TenantInfo> mtca, ITenantHeaderConfiguration thc)
+        {
+            _mtca = mtca;
+            _thc = thc;
+        }
+
         public void Probe(ProbeContext context)
         {
             context.CreateFilterScope("tenantSendFilter");
@@ -51,9 +57,9 @@ namespace Finbuckle.MultiTenant.MassTransit.MassTransitFilters
         /// <remarks>The idea here is that MassTransit calls this as part of its own middleware so we in effect embed Finbuckle Tenant Resolving capabilities into the MassTransit middleware.</remarks>
         public Task Send(SendContext<T> context, IPipe<SendContext<T>> next)
         {
-            if (mtca.MultiTenantContext?.TenantInfo is null) return next.Send(context);
+            if (_mtca.MultiTenantContext?.TenantInfo is null) return next.Send(context);
 
-            context.Headers.Set(thc.TenantIdentifierHeaderKey, mtca.MultiTenantContext.TenantInfo.Identifier, false);
+            context.Headers.Set(_thc.TenantIdentifierHeaderKey, _mtca.MultiTenantContext.TenantInfo.Identifier, false);
 
             return next.Send(context);
         }

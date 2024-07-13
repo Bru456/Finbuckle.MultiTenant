@@ -14,13 +14,13 @@ using MassTransit.Testing;
 
 namespace Finbuckle.MultiTenant.MassTransit.Test.MassTransitFilters
 {
-    public class TenantSendAndConsumeFilterShould
+    public class TenantPublishAndConsumeFilterShould
     {
         [Theory]
         [InlineData("tenant-1", "tenant-1")]
         [InlineData("tenant-2", "tenant-2")]
         [InlineData("tenant-3", "tenant-3")]
-        public async Task UsingNamedFiltersSendMessageWithTenantIdentifierHeaderCreated(string? tenantIdentifier, string? expectedTenant)
+        public async Task UsingNamedFiltersPublishMessageWithTenantIdentifierHeaderCreated(string? tenantIdentifier, string? expectedTenant)
         {
             // Arrange
             MultiTenantMassTransitTestSetupNamedFilters? setup = new MultiTenantMassTransitTestSetupNamedFilters().Setup();
@@ -39,20 +39,18 @@ namespace Finbuckle.MultiTenant.MassTransit.Test.MassTransitFilters
             };
             
             // Act
-
-            ISendEndpoint? endpoint = await setup.Harness.GetConsumerEndpoint<TestMessageConsumer>();
-            await endpoint.Send(new TestMessage("Hello, World!"));
+            setup.Harness.Bus.Publish<TestMessage>(new TestMessage("Hello, World!"));
 
             // Assert
             
-            //Check sent message
-            Assert.True(await setup.Harness.Sent.Any<TestMessage>());
-            ISentMessage<TestMessage>? sentMessage = setup.Harness.Sent.Select<TestMessage>().FirstOrDefault();
-            Assert.NotNull(sentMessage); // Ensure a message was sent
+            //Check published message
+            Assert.True(await setup.Harness.Published.Any<TestMessage>());
+            IPublishedMessage<TestMessage>? publishedMessage = setup.Harness.Published.Select<TestMessage>().FirstOrDefault();
+            Assert.NotNull(publishedMessage); // Ensure a message was published
 
-            bool headerExists = sentMessage.Context.Headers.TryGetHeader("__tenant__", out var headerValueSent);
+            bool headerExists = publishedMessage.Context.Headers.TryGetHeader("__tenant__", out var headerValuePublished);
             Assert.True(headerExists); // Verify the header exists
-            Assert.Equal(expectedTenant, headerValueSent); // Verify the header value
+            Assert.Equal(expectedTenant, headerValuePublished); // Verify the header value
 
             //Check consumed message
             Assert.True(await setup.Harness.Consumed.Any<TestMessage>());
@@ -69,7 +67,7 @@ namespace Finbuckle.MultiTenant.MassTransit.Test.MassTransitFilters
         [Theory]
         [InlineData("", null)]
         [InlineData("tenant-4", null)]
-        public async Task UsingNamedFiltersSendMessageWithNoTenantIdentifierHeader(string? tenantIdentifier, string? expectedTenant)
+        public async Task UsingNamedFiltersPublishMessageWithNoTenantIdentifierHeader(string? tenantIdentifier, string? expectedTenant)
         {
             // Arrange
             MultiTenantMassTransitTestSetupNamedFilters? setup = new MultiTenantMassTransitTestSetupNamedFilters().Setup();
@@ -88,19 +86,18 @@ namespace Finbuckle.MultiTenant.MassTransit.Test.MassTransitFilters
             };
 
             // Act
-            ISendEndpoint? endpoint = await setup.Harness.GetConsumerEndpoint<TestMessageConsumer>();
-            await endpoint.Send(new TestMessage("Hello, World!"));
+            setup.Harness.Bus.Publish<TestMessage>(new TestMessage("Hello, World!"));
 
             // Assert
+            
+            //Check published message
+            Assert.True(await setup.Harness.Published.Any<TestMessage>());
+            IPublishedMessage<TestMessage>? publishedMessage = setup.Harness.Published.Select<TestMessage>().FirstOrDefault();
+            Assert.NotNull(publishedMessage); // Ensure a message was published
 
-            //Check sent message
-            Assert.True(await setup.Harness.Sent.Any<TestMessage>());
-            ISentMessage<TestMessage>? sentMessage = setup.Harness.Sent.Select<TestMessage>().FirstOrDefault();
-            Assert.NotNull(sentMessage); // Ensure a message was sent
-
-            bool headerExists = sentMessage.Context.Headers.TryGetHeader("__tenant__", out var headerValueSent);
+            bool headerExists = publishedMessage.Context.Headers.TryGetHeader("__tenant__", out var headerValuePublished);
             Assert.False(headerExists); // Verify the header exists
-            Assert.Equal(expectedTenant, headerValueSent); // Verify the header value
+            Assert.Equal(expectedTenant, headerValuePublished); // Verify the header value
 
             //Check consumed message
             Assert.True(await setup.Harness.Consumed.Any<TestMessage>());
@@ -118,7 +115,7 @@ namespace Finbuckle.MultiTenant.MassTransit.Test.MassTransitFilters
         [InlineData("tenant-1", "tenant-1")]
         [InlineData("tenant-2", "tenant-2")]
         [InlineData("tenant-3", "tenant-3")]
-        public async Task UsingBusConfiguratorSendMessageWithTenantIdentifierHeaderCreated(string? tenantIdentifier, string? expectedTenant)
+        public async Task UsingBusConfiguratorPublishMessageWithTenantIdentifierHeaderCreated(string? tenantIdentifier, string? expectedTenant)
         {
             // Arrange
             MultiTenantMassTransitTestSetupBusConfigurator? setup = new MultiTenantMassTransitTestSetupBusConfigurator().Setup();
@@ -137,20 +134,18 @@ namespace Finbuckle.MultiTenant.MassTransit.Test.MassTransitFilters
             };
 
             // Act
-
-            ISendEndpoint? endpoint = await setup.Harness.GetConsumerEndpoint<TestMessageConsumer>();
-            await endpoint.Send(new TestMessage("Hello, World!"));
+            setup.Harness.Bus.Publish<TestMessage>(new TestMessage("Hello, World!"));
 
             // Assert
 
-            //Check sent message
-            Assert.True(await setup.Harness.Sent.Any<TestMessage>());
-            ISentMessage<TestMessage>? sentMessage = setup.Harness.Sent.Select<TestMessage>().FirstOrDefault();
-            Assert.NotNull(sentMessage); // Ensure a message was sent
+            //Check published message
+            Assert.True(await setup.Harness.Published.Any<TestMessage>());
+            IPublishedMessage<TestMessage>? publishedMessage = setup.Harness.Published.Select<TestMessage>().FirstOrDefault();
+            Assert.NotNull(publishedMessage); // Ensure a message was published
 
-            bool headerExists = sentMessage.Context.Headers.TryGetHeader("__tenant__", out var headerValueSent);
+            bool headerExists = publishedMessage.Context.Headers.TryGetHeader("__tenant__", out var headerValuePublished);
             Assert.True(headerExists); // Verify the header exists
-            Assert.Equal(expectedTenant, headerValueSent); // Verify the header value
+            Assert.Equal(expectedTenant, headerValuePublished); // Verify the header value
 
             //Check consumed message
             Assert.True(await setup.Harness.Consumed.Any<TestMessage>());
@@ -167,7 +162,7 @@ namespace Finbuckle.MultiTenant.MassTransit.Test.MassTransitFilters
         [Theory]
         [InlineData("", null)]
         [InlineData("tenant-4", null)]
-        public async Task UsingBusConfiguratorSendMessageWithNoTenantIdentifierHeader(string? tenantIdentifier, string? expectedTenant)
+        public async Task UsingBusConfiguratorPublishMessageWithNoTenantIdentifierHeader(string? tenantIdentifier, string? expectedTenant)
         {
             // Arrange
             MultiTenantMassTransitTestSetupBusConfigurator? setup = new MultiTenantMassTransitTestSetupBusConfigurator().Setup();
@@ -186,19 +181,18 @@ namespace Finbuckle.MultiTenant.MassTransit.Test.MassTransitFilters
             };
 
             // Act
-            ISendEndpoint? endpoint = await setup.Harness.GetConsumerEndpoint<TestMessageConsumer>();
-            await endpoint.Send(new TestMessage("Hello, World!"));
+            setup.Harness.Bus.Publish<TestMessage>(new TestMessage("Hello, World!"));
 
             // Assert
 
-            //Check sent message
-            Assert.True(await setup.Harness.Sent.Any<TestMessage>());
-            ISentMessage<TestMessage>? sentMessage = setup.Harness.Sent.Select<TestMessage>().FirstOrDefault();
-            Assert.NotNull(sentMessage); // Ensure a message was sent
+            //Check published message
+            Assert.True(await setup.Harness.Published.Any<TestMessage>());
+            IPublishedMessage<TestMessage>? publishedMessage = setup.Harness.Published.Select<TestMessage>().FirstOrDefault();
+            Assert.NotNull(publishedMessage); // Ensure a message was published
 
-            bool headerExists = sentMessage.Context.Headers.TryGetHeader("__tenant__", out var headerValueSent);
+            bool headerExists = publishedMessage.Context.Headers.TryGetHeader("__tenant__", out var headerValuePublished);
             Assert.False(headerExists); // Verify the header exists
-            Assert.Equal(expectedTenant, headerValueSent); // Verify the header value
+            Assert.Equal(expectedTenant, headerValuePublished); // Verify the header value
 
             //Check consumed message
             Assert.True(await setup.Harness.Consumed.Any<TestMessage>());

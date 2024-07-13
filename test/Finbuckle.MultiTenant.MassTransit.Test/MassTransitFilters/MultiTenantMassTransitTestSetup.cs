@@ -7,18 +7,22 @@ using System.Threading.Tasks;
 using Finbuckle.MultiTenant.MassTransit.MassTransitFilters;
 
 using MassTransit;
+using MassTransit.Configuration;
 using MassTransit.Testing;
 
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Finbuckle.MultiTenant.MassTransit.Test.MassTransitFilters
 {
-    internal class MultiTenantMassTransitTestSetup
+    /// <summary>
+    /// Setup for a test harness with named filters for multi-tenant MassTransit testing.
+    /// </summary>
+    internal class MultiTenantMassTransitTestSetupNamedFilters
     {
         public ServiceProvider ServiceProvider { get; private set; }
         public ITestHarness Harness { get; private set; }
 
-        public MultiTenantMassTransitTestSetup Setup()
+        public MultiTenantMassTransitTestSetupNamedFilters Setup()
         {
             var services = new ServiceCollection();
 
@@ -46,6 +50,57 @@ namespace Finbuckle.MultiTenant.MassTransit.Test.MassTransitFilters
                     cfg.UseSendFilter(typeof(TenantSendFilter<>), context);
                     cfg.ConfigureEndpoints(context);
                 }); 
+
+            });
+
+            ServiceProvider = services.BuildServiceProvider();
+            Harness = ServiceProvider.GetRequiredService<ITestHarness>();
+
+            return this;
+        }
+
+        public async Task StartHarnessAsync()
+        {
+            await Harness.Start();
+        }
+
+        public async Task StopHarnessAsync()
+        {
+            await Harness.Stop();
+        }
+    }
+
+    /// <summary>
+    /// setup for a test harness using the Bus Configurator for multi-tenant MassTransit testing.
+    /// </summary>
+    internal class MultiTenantMassTransitTestSetupBusConfigurator
+    {
+        public ServiceProvider ServiceProvider { get; private set; }
+        public ITestHarness Harness { get; private set; }
+
+        public MultiTenantMassTransitTestSetupBusConfigurator Setup()
+        {
+            var services = new ServiceCollection();
+
+            // Configure multi-tenant services, tenant resolver, and stores as needed
+            services.AddMultiTenant<TenantInfo>()
+                .WithMassTransitHeaderStrategy()
+                .WithInMemoryStore(options =>
+                {
+                    options.Tenants.Add(new TenantInfo { Id = "tenant-1", Identifier = "tenant-1", Name = "Tenant 1" });
+                    options.Tenants.Add(new TenantInfo { Id = "tenant-2", Identifier = "tenant-2", Name = "Tenant 2" });
+                    options.Tenants.Add(new TenantInfo { Id = "tenant-3", Identifier = "tenant-3", Name = "Tenant 3" });
+                });
+
+            // Setup MassTransit with the test harness and apply tenant filters
+            services.AddMassTransitTestHarness(cfg =>
+            {
+                cfg.AddConsumer<TestMessageConsumer>();
+                cfg.UsingInMemory((context, cfg) =>
+                {
+                    cfg.AddTenantFilters(context);
+                    cfg.ConfigureEndpoints(context);
+                });
 
             });
 

@@ -32,13 +32,18 @@ namespace Finbuckle.MultiTenant.MassTransit.MassTransitFilters
     ///        });]]>
     /// </code>
     /// </example>
-    public class TenantConsumeFilter<T> (
-        ITenantResolver tenantResolver,
-        IMultiTenantContextSetter mtcSetter
-        ) 
-        : IFilter<ConsumeContext<T>> 
+    public class TenantConsumeFilter<T> : IFilter<ConsumeContext<T>> 
         where T : class
     {
+
+        ITenantResolver _tenantResolver;
+        IMultiTenantContextSetter _mtcSetter;
+
+        public TenantConsumeFilter(ITenantResolver tenantResolver, IMultiTenantContextSetter mtcSetter)
+        {
+            _tenantResolver = tenantResolver;
+            _mtcSetter = mtcSetter;
+        }
 
         public void Probe(ProbeContext context)
         {
@@ -54,8 +59,8 @@ namespace Finbuckle.MultiTenant.MassTransit.MassTransitFilters
         /// <remarks>The idea here is that MassTransit calls this as part of its own middleware so we in effect embed Finbuckle Tenant Resolving capabilities into the MassTransit middleware.</remarks>
         public async Task Send(ConsumeContext<T> context, IPipe<ConsumeContext<T>> next)
         {
-            IMultiTenantContext? multiTenantContext = await tenantResolver.ResolveAsync(context);
-            mtcSetter.MultiTenantContext = multiTenantContext;
+            IMultiTenantContext? multiTenantContext = await _tenantResolver.ResolveAsync(context);
+            _mtcSetter.MultiTenantContext = multiTenantContext;
 
             await next.Send(context);
         }
