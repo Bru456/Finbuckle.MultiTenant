@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Finbuckle.MultiTenant.Abstractions;
 using Finbuckle.MultiTenant.MassTransit.MassTransitFilters;
 
 using MassTransit;
@@ -96,6 +97,8 @@ namespace Finbuckle.MultiTenant.MassTransit.Test.MassTransitFilters
             services.AddMassTransitTestHarness(cfg =>
             {
                 cfg.AddConsumer<TestMessageConsumer>();
+                cfg.AddActivity<TestExecuteActivity, TestExecuteArguments, TestExecuteLog>();
+                cfg.AddActivity<TestExecuteActivityThatFails, TestExecuteArguments, TestExecuteLog>();
                 cfg.UsingInMemory((context, cfg) =>
                 {
                     cfg.AddTenantFilters(context);
@@ -138,4 +141,48 @@ namespace Finbuckle.MultiTenant.MassTransit.Test.MassTransitFilters
             Content = content;
         }
     }
+
+    public class TestExecuteActivity : IActivity<TestExecuteArguments, TestExecuteLog>
+    {
+        private readonly IMultiTenantContextAccessor _multiTenantContextAccessor;
+
+        public TestExecuteActivity(IMultiTenantContextAccessor multiTenantContextAccessor)
+        {
+            _multiTenantContextAccessor = multiTenantContextAccessor;
+        }
+
+        public Task<ExecutionResult> Execute(ExecuteContext<TestExecuteArguments> context)
+        {
+            return Task.FromResult(context.Completed(new TestExecuteLog(_multiTenantContextAccessor.MultiTenantContext.TenantInfo?.Identifier)));
+        }
+
+        public Task<CompensationResult> Compensate(CompensateContext<TestExecuteLog> context)
+        {
+            return Task.FromResult(context.Compensated(new TestExecuteLog(_multiTenantContextAccessor.MultiTenantContext.TenantInfo?.Identifier)));
+        }
+    }
+
+    public class TestExecuteActivityThatFails : IActivity<TestExecuteArguments, TestExecuteLog>
+    {
+        private readonly IMultiTenantContextAccessor _multiTenantContextAccessor;
+
+        public TestExecuteActivityThatFails(IMultiTenantContextAccessor multiTenantContextAccessor)
+        {
+            _multiTenantContextAccessor = multiTenantContextAccessor;
+        }
+
+        public Task<ExecutionResult> Execute(ExecuteContext<TestExecuteArguments> context)
+        {
+            return Task.FromResult(context.FaultedWithVariables(new Exception("Faulted"), new TestExecuteLog(_multiTenantContextAccessor.MultiTenantContext.TenantInfo?.Identifier)));
+        }
+
+        public Task<CompensationResult> Compensate(CompensateContext<TestExecuteLog> context)
+        {
+            return Task.FromResult(context.Compensated());
+        }
+    }
+
+    public record TestExecuteArguments();
+
+    public record TestExecuteLog(string? Identifier);
 }

@@ -63,7 +63,7 @@ namespace Finbuckle.MultiTenant.MassTransit.MassTransitFilters
 
             //context.Headers.Set("tenantId", mtca.MultiTenantContext.TenantInfo.Id, false);
             context.Headers.Set(_thc.TenantIdentifierHeaderKey, _mtca.MultiTenantContext.TenantInfo.Identifier, false);
-
+            
             return next.Send(context);
         }
     }
