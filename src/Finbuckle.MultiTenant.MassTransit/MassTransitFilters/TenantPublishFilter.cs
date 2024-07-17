@@ -37,10 +37,10 @@ namespace Finbuckle.MultiTenant.MassTransit.MassTransitFilters
         where T : class
     {
 
-        IMultiTenantContextAccessor<TenantInfo> _mtca;
+        IMultiTenantContextAccessor _mtca;
         ITenantHeaderConfiguration _thc;
 
-        public TenantPublishFilter(IMultiTenantContextAccessor<TenantInfo> mtca, ITenantHeaderConfiguration thc)
+        public TenantPublishFilter(IMultiTenantContextAccessor mtca, ITenantHeaderConfiguration thc)
         {
             _mtca = mtca;
             _thc = thc;

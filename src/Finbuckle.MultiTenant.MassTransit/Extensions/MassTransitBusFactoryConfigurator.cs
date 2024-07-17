@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Finbuckle.MultiTenant;
+using Finbuckle.MultiTenant.Abstractions;
 using Finbuckle.MultiTenant.MassTransit.MassTransitFilters;
 
 namespace MassTransit
 {
-    public static class MassTransitBusFactoryConfigurator
+    public static class MassTransitBusFactoryConfigurator 
     {
         public static void AddTenantFilters(this IBusFactoryConfigurator configurator, IRegistrationContext context)
         {
